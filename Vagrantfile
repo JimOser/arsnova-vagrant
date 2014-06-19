@@ -10,68 +10,46 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "fadenb/debian-wheezy-puppet3"
+#  config.vm.box = "base"
+  config.vm.box = "dummy"
+  config.ssh.username = "ubuntu"
+  config.vm.provision :shell, path: "bootstrap.sh"
+  # install rvm per http://rvm.io/integration/vagrant
+  config.vm.provision :shell, :path => "install-rvm.sh",  :args => "stable"
+  config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3"
+  config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3 listen"
+  config.vm.provision :shell, :path => "install-puppet.sh"
 
-  # The url from where the 'config.vm.box' box will be fetched if it
-  # doesn't already exist on the user's system.
-  # config.vm.box_url = "http://domain.com/path/to/above.box"
+  # install puppet
+# rsync doesn't work as advertised; can't exclude directories"
+#  config.vm.synced_folder ".", "/vagrant", type: "rsync",
+#      rsync__exclude: [ ".git/", "tools/", "private/", ".gitignore", ".gitmodules", ".vagrant/"] 
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
+# Keep things really simple, what I want to share put in ../data
+  config.vm.synced_folder "../data", "/vagrant", type: "rsync",
+      rsync__exclude: [ ".git/", "tools/", "private/", ".gitignore", ".gitmodules", ".vagrant/"] 
+  config.vm.provider :aws do |aws, override|
+    # from the iam  csv file
+    # but stored in  ~/.aws_profile
+    # as environmental variables
+#   # export AWS_ACCESS_KEY = "<your access key >"
+#   # export AWS_SECRET_KEY = "<your secret key >"
+    aws.access_key_id = ENV['AWS_ACCESS_KEY'] 
+    aws.secret_access_key = ENV['AWS_SECRET_KEY'] 
+    # key pair
+    aws.keypair_name = "NorthernCaliforniaKeyPairName"
+#   N. California
+#   Ubuntu Server 14.04 LTS (PV) - ami-ee4f77ab (64-bit) / ami-ec4f77a9 (32-bit) 
+    aws.ami = "ami-ee4f77ab"
+    aws.instance_type = 't1.micro'
+    aws.security_groups = [ "myvagrantsecuritygroup" ]
+    aws.region= 'us-west-1'
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
-
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
-
-  # If true, then any SSH connections made will enable agent forwarding.
-  # Default value: false
-  # config.ssh.forward_agent = true
-
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
-
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-   config.vm.provider "virtualbox" do |vb|
-  #   # Don't boot with headless mode
-  #   vb.gui = true
-  #
-     # Use VBoxManage to customize the VM. For example to change memory:
-     vb.customize ["modifyvm", :id, "--memory", "1024"]
-   end
-  #
-  # View the documentation for the provider you're using for more
-  # information on available options.
-
-  # Enable provisioning with Puppet stand alone.  Puppet manifests
-  # are contained in a directory path relative to this Vagrantfile.
-  # You will need to create the manifests directory and a manifest in
-  # the file fadenb/debian-wheezy-puppet3.pp in the manifests_path directory.
-  #
-  # An example Puppet manifest to provision the message of the day:
-  #
-  # # group { "puppet":
-  # #   ensure => "present",
-  # # }
-  # #
-  # # File { owner => 0, group => 0, mode => 0644 }
-  # #
-  # # file { '/etc/motd':
-  # #   content => "Welcome to your Vagrant-built virtual machine!
-  # #               Managed by Puppet.\n"
-  # # }
-  #
+    override.ssh.username = "ubuntu"
+    override.ssh.private_key_path = '/Users/oserj/Documents/Amazon/NorthernCaliforniaKeyPairName.pem'
+#    override.vm.box = "dummy"
+#    override.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
+  end
   pp_manifest_path = "puppet/manifests"
   pp_module_path = "puppet/modules"
   pp_manifest_file = "debian-wheezy.pp"
@@ -120,26 +98,30 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       puppet.manifests_path = pp_manifest_path
       puppet.manifest_file = pp_manifest_file
       puppet.module_path = pp_module_path
-      puppet.options = "--environment=development"
+      puppet.options = "--environment=development --verbose --debug"
+      puppet.facter = {
+        "git_owner" => "ubuntu",
+        "git_group" => "ubuntu"
+      }
     end
-    dev.vm.network "forwarded_port", guest: 8080, host: 8080
+#  dev.vm.network "forwarded_port", guest: 8080, host: 8080
     # socket.io port
-    dev.vm.network "forwarded_port", guest: 10443, host: 10443
+#    dev.vm.network "forwarded_port", guest: 10443, host: 10443
     # CouchDB
-    dev.vm.network "forwarded_port", guest: 5984, host: 5984
+#    dev.vm.network "forwarded_port", guest: 5984, host: 5984
   end
-  config.vm.define "production", autostart: false do |production|
-    production.vm.hostname = "arsnova-production"
-    production.vm.provision "puppet" do |puppet|
-      puppet.manifests_path = pp_manifest_path
-      puppet.manifest_file = pp_manifest_file
-      puppet.module_path = pp_module_path
-      puppet.options = "--environment=production"
-    end
-    production.vm.network "forwarded_port", guest: 8080, host: 8081
-    # socket.io port
-    production.vm.network "forwarded_port", guest: 10444, host: 10444
-    # CouchDB
-    production.vm.network "forwarded_port", guest: 5984, host: 5985
-  end
+#  config.vm.define "production", autostart: false do |production|
+#    production.vm.hostname = "arsnova-production"
+#    production.vm.provision "puppet" do |puppet|
+#      puppet.manifests_path = pp_manifest_path
+#      puppet.manifest_file = pp_manifest_file
+#      puppet.module_path = pp_module_path
+#      puppet.options = "--environment=production"
+#    end
+#    production.vm.network "forwarded_port", guest: 8080, host: 8081
+#    # socket.io port
+#    production.vm.network "forwarded_port", guest: 10444, host: 10444
+#    # CouchDB
+#    production.vm.network "forwarded_port", guest: 5984, host: 5985
+#  end
 end

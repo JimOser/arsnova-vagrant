@@ -45,22 +45,22 @@ class arsnova {
   git::repo { "arsnova-war":
     path => $server_path,
     source => "https://github.com/thm-projects/arsnova-war.git",
-    owner => "vagrant",
-    group => "vagrant"
+    owner => $git_owner,
+    group => $git_group 
   }
 
   git::repo { "arsnova-mobile":
     path => $mobile_path,
     source => "https://github.com/thm-projects/arsnova-mobile.git",
-    owner => "vagrant",
-    group => "vagrant"
+    owner => $git_owner,
+    group => $git_group 
   }
 
   git::repo { "arsnova-setuptool":
     path => "$base_path/arsnova-setuptool",
     source => "https://github.com/thm-projects/setuptool.git",
-    owner => "vagrant",
-    group => "vagrant"
+    owner =>  $git_owner,
+    group =>  $git_group 
   }
 
   file { "/etc/arsnova":
