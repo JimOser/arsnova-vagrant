@@ -28,8 +28,38 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3"
     config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3 listen"
     config.vm.provision :shell, :path => "install-puppet.sh"
+    config.vm.provider :aws do |aws, override|
+      # export AWS_ACCESS_KEY = "<your access key >"
+      # export AWS_SECRET_KEY = "<your secret key >"
+      aws.access_key_id = ENV['AWS_ACCESS_KEY'] 
+      aws.secret_access_key = ENV['AWS_SECRET_KEY'] 
+      # key pair
+      aws.keypair_name = "NorthernCaliforniaKeyPairName"
+      #   N. California
+      #   Ubuntu Server 14.04 LTS (PV) - ami-ee4f77ab (64-bit) / ami-ec4f77a9 (32-bit) 
+      aws.ami = "ami-ee4f77ab"
+      aws.instance_type = 't1.micro'
+      # Make your own security group or use "default"
+      # Could modify code to look for environmental variable 'AWS_SECURITY_GROUPS'
+      aws.security_groups = [ "myvagrantsecuritygroup" ]
+      # You probably want to pick a region near where the majority of your customers are.
+      aws.region= 'us-west-1'
+      #
+      override.ssh.username = ssh_user 
+      # Could modify code to look for environmental variable 'PRIVATE_KEY_PATH'
+      override.ssh.private_key_path = '~/.ssh/NorthernCaliforniaKeyPairName.pem'
+      config.vm.synced_folder ".", "/vagrant", type: "rsync",
+        rsync__exclude: [ ".git/", "tools/", "private/", ".gitignore", ".gitmodules", ".vagrant/"] 
+    end
   else
     config.vm.box = "fadenb/debian-wheezy-puppet3"
+    config.vm.synced_folder "./puppet/files", "/etc/puppet/files"
+    config.vm.provider "virtualbox" do |vb|
+      # Don't boot with headless mode
+      # vb.gui = true
+      # Use VBoxManage to customize the VM. For example to change memory:
+      vb.customize ["modifyvm", :id, "--memory", "1024"]
+    end
   end
   config.ssh.username = ssh_user
 
@@ -58,19 +88,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  config.vm.synced_folder "./puppet/files", "/etc/puppet/files"
+###  config.vm.synced_folder "./puppet/files", "/etc/puppet/files"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-   config.vm.provider "virtualbox" do |vb|
+###   config.vm.provider "virtualbox" do |vb|
   #   # Don't boot with headless mode
   #   vb.gui = true
   #
      # Use VBoxManage to customize the VM. For example to change memory:
-     vb.customize ["modifyvm", :id, "--memory", "1024"]
-   end
+###     vb.customize ["modifyvm", :id, "--memory", "1024"]
+###   end
   #
   # View the documentation for the provider you're using for more
   # information on available options.
@@ -148,11 +178,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         
       }
     end
-    dev.vm.network "forwarded_port", guest: 8080, host: 8080
-    # socket.io port
-    dev.vm.network "forwarded_port", guest: 10443, host: 10443
-    # CouchDB
-    dev.vm.network "forwarded_port", guest: 5984, host: 5984
+    if (aws_build? == false)
+      dev.vm.network "forwarded_port", guest: 8080, host: 8080
+      # socket.io port
+      dev.vm.network "forwarded_port", guest: 10443, host: 10443
+      # CouchDB
+      dev.vm.network "forwarded_port", guest: 5984, host: 5984
+    end
   end
   config.vm.define "production", autostart: false do |production|
     production.vm.hostname = "arsnova-production"
@@ -162,10 +194,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       puppet.module_path = pp_module_path
       puppet.options = ["--environment=production"]
     end
-    production.vm.network "forwarded_port", guest: 80, host: 8081
-    # socket.io port
-    production.vm.network "forwarded_port", guest: 10444, host: 10444
-    # CouchDB
-    production.vm.network "forwarded_port", guest: 5984, host: 5985
+    if (aws_build? == false)
+      production.vm.network "forwarded_port", guest: 80, host: 8081
+      # socket.io port
+      production.vm.network "forwarded_port", guest: 10444, host: 10444
+      # CouchDB
+      production.vm.network "forwarded_port", guest: 5984, host: 5985
+    end
   end
 end
