@@ -1,5 +1,4 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
+# -*- mode: ruby -*- # vi: set ft=ruby :
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
@@ -48,8 +47,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       override.ssh.username = ssh_user 
       # Could modify code to look for environmental variable 'PRIVATE_KEY_PATH'
       override.ssh.private_key_path = '~/.ssh/NorthernCaliforniaKeyPairName.pem'
-      config.vm.synced_folder ".", "/vagrant", type: "rsync",
-        rsync__exclude: [ ".git/", "tools/", "private/", ".gitignore", ".gitmodules", ".vagrant/"] 
+      config.vm.synced_folder "../data", "/vagrant", type: "rsync",
+        rsync__exclude: [ ".git/", "tools/", "private/", ".gitignore", ".gitmodules", ".vagrant/", ".*"] 
     end
   else
     config.vm.box = "fadenb/debian-wheezy-puppet3"
