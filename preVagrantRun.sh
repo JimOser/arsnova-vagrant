@@ -46,9 +46,10 @@ if vagrant box  list | egrep -q dummy
     vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
 fi
 vagrant box list
-time VAGRANT_LOG=debug vagrant up --provider=aws 2>&1   
+time VAGRANT_LOG=debug vagrant up --provider=aws    
 
 vagrant ssh-config
 ENDTIME=$(date +%s)
 echo "These commands took $(($ENDTIME - $STARTTIME)) seconds to do "
+vagrant ssh -c "rvm info ; ruby -v ; hostname ; free -h ; uname -a ;  ps aux ; cat /proc/meminfo "
 } | tee -a $FILE  
