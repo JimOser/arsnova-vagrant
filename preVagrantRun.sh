@@ -19,11 +19,11 @@ if vagrant plugin list | egrep -q vagrant-aws
     echo "vagrant-aws plugin is installed" 
   else vagrant plugin install vagrant-aws 
 fi
-if vagrant plugin list | egrep -q fog 
-  then
-    echo "fog plugin is installed" 
-  else vagrant plugin install fog 
-fi
+# if vagrant plugin list | egrep -q fog 
+#   then
+#     echo "fog plugin is installed" 
+#   else vagrant plugin install fog 
+# fi
 # Vagrantfile specifies that rsync will 
 # sync on Host side ../data  to Guest side /vagrant
 # We are doing this because rsync exclusion does not work in 1.6.3
@@ -46,7 +46,8 @@ if vagrant box  list | egrep -q dummy
     vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
 fi
 vagrant box list
-# time VAGRANT_LOG=info vagrant up --provider=aws   
+time VAGRANT_LOG=debug vagrant up --provider=aws 2>&1   
+
 vagrant ssh-config
 ENDTIME=$(date +%s)
 echo "These commands took $(($ENDTIME - $STARTTIME)) seconds to do "

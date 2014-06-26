@@ -11,7 +11,9 @@ def aws_build?
 end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  puts __LINE__
   if aws_build? 
+    puts __LINE__
     ssh_user = "ubuntu"
     ssh_group = "ubuntu"
   # See: https://github.com/mitchellh/vagrant-aws
@@ -19,6 +21,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #    $ vagrant plugin install vagrant-aws
     config.vm.box = "dummy"
     config.vm.provider :aws do |aws, override|
+      puts __LINE__
       # export AWS_ACCESS_KEY = "<your access key >"
       # export AWS_SECRET_KEY = "<your secret key >"
       aws.access_key_id = ENV['AWS_ACCESS_KEY'] 
@@ -40,6 +43,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       override.ssh.private_key_path = '~/.ssh/NorthernCaliforniaKeyPairName.pem'
       config.vm.synced_folder "../data", "/vagrant", type: "rsync"
 #        rsync__exclude: [ ".git/", "tools/", "private/", ".gitignore", ".gitmodules", ".vagrant/"] 
+# Got an error message when there were not any tags so add some dummy tags.
+      aws.tags = {
+        'MOOC' => 'iversity',
+        'Course' => 'Web Engineering III'
+      }
     end
   end
 end
