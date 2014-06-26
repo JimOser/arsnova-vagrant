@@ -20,6 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Manually do on command line:
   #    $ vagrant plugin install vagrant-aws
     config.vm.box = "dummy"
+    config.vm.hostname = "aws-ubuntu"
     config.vm.provider :aws do |aws, override|
       puts __LINE__
       # export AWS_ACCESS_KEY = "<your access key >"
