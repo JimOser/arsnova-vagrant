@@ -21,6 +21,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #    $ vagrant plugin install vagrant-aws
     config.vm.box = "dummy"
     config.vm.hostname = "aws-ubuntu"
+    # install rvm per http://rvm.io/integration/vagrant
+    config.vm.provision :shell, :path => "install-rvm.sh",  :args => "stable"
+    config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3"
+    config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3 listen"
+    config.vm.provision :shell, :path => "install-puppet.sh"
     config.vm.provider :aws do |aws, override|
       puts __LINE__
       # export AWS_ACCESS_KEY = "<your access key >"
