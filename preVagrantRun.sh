@@ -4,8 +4,6 @@ NOW=$(date +"%Y%m%d%H%M")
 FILE="../logs/aws$NOW.log"
 {
 echo "logfile is $FILE"
-# rest of script
-# tar xcvf /nas42/backup.$NOW.tar.gz /home/ /etc/ /var
  
 # The following must be installed before running 
 # vagrant up --provider=aws
