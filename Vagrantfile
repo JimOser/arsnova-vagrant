@@ -5,10 +5,14 @@
 VAGRANTFILE_API_VERSION = "2"
 ssh_user  = "vagrant"
 ssh_group = "vagrant"
+pp_manifest_path = "puppet/manifests"
+pp_module_path = "puppet/modules"
+pp_manifest_file = "debian-wheezy.pp"
 
 def aws_build?
   ENV['BUILD'] == "AWS"  
 end
+
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   puts __LINE__
@@ -16,6 +20,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puts __LINE__
     ssh_user = "ubuntu"
     ssh_group = "ubuntu"
+    # There is no GUI. Don't install xcfe or Chrome Browser.
+    # t1.micro does not have enough memory for these programs.
+    # If you try to install xcfe-goodies . It will install aspell , which 
+    # will hang the system, because it hogs the cpu, probably trying to index the whole drive.    
+
+    # root     29453 96.2  0.2  22176  1764 ?        R    21:37  51:27 aspell --per-conf=/dev/null --dont-validate-affixes --local-data-dir=/usr/lib/aspell --lang=en create master /var/lib/aspell/en-variant_2.rws
+
+    pp_manifest_file = "aws-nogui.pp"
   # See: https://github.com/mitchellh/vagrant-aws
   # Manually do on command line:
   #    $ vagrant plugin install vagrant-aws
@@ -26,6 +38,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3"
     config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3 listen"
     config.vm.provision :shell, :path => "install-puppet.sh"
+    config.vm.provision "puppet" do |puppet|
+      puppet.manifests_path = pp_manifest_path
+      puppet.manifest_file = pp_manifest_file
+      puppet.module_path = pp_module_path
+      puppet.options = "--environment=development --verbose --debug"
+      puppet.facter = {
+        "git_owner" => "ubuntu",
+        "git_group" => "ubuntu"
+      }
+    end
+    #  dev.vm.network "forwarded_port", guest: 8080, host: 8080
+    # socket.io port
+    #    dev.vm.network "forwarded_port", guest: 10443, host: 10443
+    # CouchDB
+    #    dev.vm.network "forwarded_port", guest: 5984, host: 5984
     config.vm.provider :aws do |aws, override|
       puts __LINE__
       # export AWS_ACCESS_KEY = "<your access key >"
