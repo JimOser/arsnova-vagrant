@@ -44,7 +44,7 @@ if vagrant box  list | egrep -q dummy
     vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
 fi
 vagrant box list
-time VAGRANT_LOG=debug vagrant up --provider=aws    
+time VAGRANT_LOG=debug vagrant up --provider=aws 2>&1    
 
 vagrant ssh-config
 ENDTIME=$(date +%s)

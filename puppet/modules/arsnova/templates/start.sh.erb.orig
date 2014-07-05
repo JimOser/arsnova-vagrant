@@ -33,16 +33,15 @@ PID_SERVER=0
 PID_LISTEN=0
 
 cd "$ARSNOVA_MOBILE"
-# eval "ruby ~/listen.rb $OUTPUT_REDIRECT &"
-# PID_LISTEN=$!
+eval "ruby ~/listen.rb $OUTPUT_REDIRECT &"
+PID_LISTEN=$!
 eval "ant -quiet sencha:build:<%= @sencha_env %> $OUTPUT_REDIRECT"
-# eval "ant -quiet sencha:app:watch -Denvironment=<%= @sencha_env %> $OUTPUT_REDIRECT &"
-# PID_MOBILE=$!
+eval "ant -quiet sencha:app:watch -Denvironment=<%= @sencha_env %> $OUTPUT_REDIRECT &"
+PID_MOBILE=$!
 
 <% if @environment == "development" %>
 cd "$ARSNOVA_SERVER"
-# eval "mvn -q jetty:run -Dmobile.path=<%= @mobile_target %> $OUTPUT_REDIRECT &"
-eval "mvn  jetty:run -Dmobile.path=<%= @mobile_target %> $OUTPUT_REDIRECT &"
+eval "mvn -q jetty:run -Dmobile.path=<%= @mobile_target %> $OUTPUT_REDIRECT &"
 PID_SERVER=$!
 <% else %>
 cd "$ARSNOVA_SERVER"
@@ -51,8 +50,8 @@ eval "mvn -q tomcat7:deploy -Dmobile.path=<%= @mobile_target %> $OUTPUT_REDIRECT
 
 cd "$CWD"
 
-# echo "$PID_LISTEN" > "$PID_FILE_LISTEN"
-# echo "$PID_MOBILE" > "$PID_FILE_MOBILE"
+echo "$PID_LISTEN" > "$PID_FILE_LISTEN"
+echo "$PID_MOBILE" > "$PID_FILE_MOBILE"
 echo "$PID_SERVER" > "$PID_FILE_SERVER"
 
 <% if @environment == "development" %>
@@ -61,13 +60,11 @@ ARSNOVA_URL="http://localhost:8080/index.html"
 ARSNOVA_URL="http://localhost/mobile/index.html"
 <% end %>
 RESPONSE_CODE=0
-echo "Will check once a minute to see if server is up"
-echo "Go get a cup of coffee. This may time 15 minutes."
 while [ "$RESPONSE_CODE" -ne 200 ]
 do
   # courtesy of http://superuser.com/a/442395
   RESPONSE_CODE=`curl -s -o /dev/null -I -w "%{http_code}" -m 5 "$ARSNOVA_URL"`
-  sleep 60 
+  sleep 5
   echo -e ".\c"
 done
 

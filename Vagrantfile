@@ -15,9 +15,9 @@ end
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  puts __LINE__
-  if aws_build? 
-    puts __LINE__
+  puts "#{__FILE__}: #{__LINE__}"
+  if aws_build?
+    puts "#{__FILE__}: #{__LINE__}"
     ssh_user = "ubuntu"
     ssh_group = "ubuntu"
     # There is no GUI. Don't install xcfe or Chrome Browser.
@@ -54,7 +54,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # CouchDB
     #    dev.vm.network "forwarded_port", guest: 5984, host: 5984
     config.vm.provider :aws do |aws, override|
-      puts __LINE__
+      puts "#{__FILE__}: #{__LINE__}"
       # export AWS_ACCESS_KEY = "<your access key >"
       # export AWS_SECRET_KEY = "<your secret key >"
       aws.access_key_id = ENV['AWS_ACCESS_KEY'] 
@@ -74,7 +74,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       override.ssh.username = ssh_user 
       # Could modify code to look for environmental variable 'PRIVATE_KEY_PATH'
       override.ssh.private_key_path = '~/.ssh/NorthernCaliforniaKeyPairName.pem'
-      config.vm.synced_folder "../data", "/vagrant", type: "rsync"
+      config.vm.synced_folder "../data", "/vagrant/data", type: "rsync"
 #        rsync__exclude: [ ".git/", "tools/", "private/", ".gitignore", ".gitmodules", ".vagrant/"] 
 # Got an error message when there were not any tags so add some dummy tags.
       aws.tags = {
