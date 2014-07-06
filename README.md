@@ -1,12 +1,98 @@
 # ARSnova Vagrant
 
-This Vagrant configuration will provision a Debian development box with all tools required for ARSnova.
+This is a fork of thm-projects/arsnova-vagrant
+
+The thm-projects/Vagrant configuration provisioned a Debian development box with all tools required for ARSnova.
+
+There were students in the iversity THM Web Engineering III class, who had computers with "slow" CPUs and 2 GBs
+of memory. The vagrant virtual box solution was extremely slow for these students. We are talking hours to bring 
+up something that was advertised to come up in minutes (perhaps if we had 4 core machines with 16 GB, we also 
+would not have had any problems.
+
+At the time of this fork, Amazon was offering a free t1.micro tier for a year. With this setup, the system was ok,
+but still suffer problems probably due to memory limitations.
+
+Then a wonderful thing happened, on or about July 1, 2014 Amazon announced a free t2.micro tier, which had 1 GB 
+of memory.
+
+
+
+
+
 
 ## Goal
 
-ARSnova developers should not need to install any tools in order to get ARSnova up and running. Ideally, the only thing needed is an IDE. All other tools as well as the required workflows shall be handled by the Vagrant box.
+The original thm-project stated "ARSnova developers should not need to install any tools in order to get ARSnova up and running. Ideally, the only thing needed is an IDE. All other tools as well as the required workflows shall be handled by the Vagrant box.
 
+The goal of the forked project is to supply a Ubuntu environment, that can be used to develop ARSnova. It is assumed
+
+that the developer will ssh into the system and then use vim to edit the files.
+
+Advantage of the forked project:
+
+1. Developer doesn't need a fancy development computer with lots of memory.
+2. The development system is on the Internet, so can be reached by any Internet connected computer (as long as one has ssh capabilities).
+3. The builds are made with ant and maven, and the test environment can be accessed by going to:
+http:<server_ip_address>:8080
+
+Disavantages of the forked project:
+1. No GUI.
+2. Can't use IDE.
+3. Production (tomcat) is not currently supported, but should be available in a later release.
+
+## Pre-getting started
+
+Familar yourself with the Amazon Free t2.micro tier.
+
+Follow one of the many online tutorials and using the AWS Console bring up a Ubuntu t2.micro. 
+
+Even though, this is advertised as a quick 20 minute process, it may take you a day to read the documentation before you feel comfortable in plunging into signing up for AWS and configuring your first instance.
+
+Please be aware that the author(s) of the forked arsnova-vagrant and the THM author(s) of the original arsnova-vagrant take no responsibility if Amazon charges you money.
+
+It is important to keep your eye on the AWS EC2 Console. It is important to understand when and why Amazon may charge you for things.
+
+It is also expected but not necessary, that you already have had experience with the original THM arsnova-vagrant.
 ## Getting Started
+
+Looking at the Vagrant file, you will see that this project makes heavy use of environmental variables.
+
+
+  ENV['BUILD'] == "AWS"  
+  aws.access_key_id = ENV['AWS_ACCESS_KEY'] 
+  aws.secret_access_key = ENV['AWS_SECRET_KEY'] 
+  # Could modify code to look for environmental variable 'AWS_SECURITY_GROUPS'
+  # Could modify code to look for environmental variable 'PRIVATE_KEY_PATH'
+
+  If you are on a Mac, you could create a new file ~/.aws_profile 
+  The .aws_profile would look like something like this:
+
+```bash
+echo ".aws_profile is called"
+function parse_git_branch () {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+ 
+RED="\[\033[0;31m\]"
+YELLOW="\[\033[0;33m\]"
+GREEN="\[\033[0;32m\]"
+NO_COLOR="\[\033[0m\]"
+ 
+PS1="$GREEN\u@\h$NO_COLOR:\w$YELLOW\$(parse_git_branch)$NO_COLOR\$ "
+
+export AWS_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXX
+export AWS_SECRET_KEY=123456789XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+export BUILD=AWS
+```
+
+Then in your ~/.bash_profile add this line:
+
+```bash
+source  ~/.aws_profile
+```
+# source /Users/oserj/.rvm/scripts/rvm
+
+
 
 This repository comes with several Git submodules. These can be automatically checked out while cloning by providing the `--recursive` flag:
 
@@ -17,25 +103,46 @@ Alternatively, initialize and update the submodules after cloning:
 	git submodule update --init --recursive
 
 ## Basic Usage
+### The very first time, start the machine with:
+(Note: that the last line of setup.sh does the normal vagrant up with logging. The setup.sh also does some other things so you might want to take a look at it.)
 
-Start the machine with the following command:
+```bash
+$ ./setup.sh
+```
 
-	$ vagrant up dev
+~~Start the machine with the following command:~~
+
+~~$ vagrant up dev~~
 
 This will create a completely configured VM. Running this the first time will download and install all required packages. Depending on your internet connection this operation will take some time. Once the machine is up and running, you can connect with:
 
+```bash
 	$ vagrant ssh
+```
 
 Then, in order to start ARSnova, type:
 
-	% ./start.sh
+```bash
+	$ ./start.sh
+```
 
-This will build and start ARSnova. You can now visit http://localhost:8080/index.html in your browser.
+This will build and start ARSnova.
+
+To find out the server_ip either go to AWS Console and click on the connect tab or do:
+
+```bash
+$ vagrant ssh-config
+```
+
+You can now visit http://<server_ip>:8080/index.html in your browser.
 
 Finally, if you want to stop ARSnova, use this command:
 
-	% ./stop.sh
+```bash
+$ ./stop.sh
+```
 
+<!---
 ### Testing for production
 
 The machine's default environment is for development. If you are happy with your changes in development mode, you may wish to test them in a more realistic environment. For creating a production-like environment, type:
@@ -46,6 +153,7 @@ All commands remain the same, e.g., use `./start.sh` on the machine. But make su
 
 *Note:* In contrast to the development machine all changes have to be manually redeployed to Tomcat in the production environment. To do this, run `mvn tomcat7:deploy` in the `arsnova-war` directory.
 
+-->
 ## ARSnova repositories
 
 After the first boot of your VM, you will find the following repositories inside this project's root folder:
@@ -80,6 +188,7 @@ The following ports are used on the host machine:
 - 10443 (socket.io)
 - 5984 (CouchDB)
 
+<!---
 ### Production
 
 - 8081 (Web)
@@ -98,6 +207,7 @@ Once you restart the VM, log in with Vagrant's default credentials: user and pas
 
 	startx
 
+-->
 ## Contributing
 
 Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) document.
@@ -139,3 +249,5 @@ Yes.
 ## Credits
 
 ARSnova is powered by THM - Technische Hochschule Mittelhessen - University of Applied Sciences.
+
+Port to AWS by Jim Oser, oserj@oserconsulting.com
