@@ -112,6 +112,26 @@ If files like `start.sh` are missing, it is most likely that the provisioning ha
 
 The first time this script runs it will take quite some time because Maven has to download a lot of dependencies. To see if an error occurs, run `./start.sh -v` which displays Ant's and Maven's verbose outputs.
 
+### Can't ssh.
+
+Set your inbound security group to:
+Type: all traffic
+Protocol: all
+Port Range: all
+Security: 0.0.0.0/0     (This is the setting that is probably fouling you up.)
+
+### Web browser doesn't recognize address.
+
+Make sure that you know the IP address of your webserver.
+$ vagrant ssh-config
+
+For dev do:
+
+http://<ip_address_of_server>:8080
+
+Do not do:
+http://localhost:8080
+
 ## Is it any good?
 
 Yes.
