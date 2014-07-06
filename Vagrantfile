@@ -60,20 +60,39 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       aws.access_key_id = ENV['AWS_ACCESS_KEY'] 
       aws.secret_access_key = ENV['AWS_SECRET_KEY'] 
       # key pair
-      aws.keypair_name = "NorthernCaliforniaKeyPairName"
       #   N. California
       #   Ubuntu Server 14.04 LTS (PV) - ami-ee4f77ab (64-bit) / ami-ec4f77a9 (32-bit) 
-      aws.ami = "ami-ee4f77ab"
-      aws.instance_type = 't1.micro'
+      # t1.micro
+      # aws.ami = "ami-ee4f77ab"
+      # aws.instance_type = 't1.micro'
+      # aws.region= 'us-west-1'
+      aws.keypair_name = "oregon"
+
+      # Oregon
+      # Ubuntu Server 14.04 LTS (HVM) - ami-6cc2a85c
+      # t2.micro
+      # Root device type: ebs Virtualization type: hvm
+      aws.ami = "ami-6cc2a85c"
+      aws.instance_type = 't2.micro'
       # Make your own security group or use "default"
       # Could modify code to look for environmental variable 'AWS_SECURITY_GROUPS'
       aws.security_groups = [ "myvagrantsecuritygroup" ]
       # You probably want to pick a region near where the majority of your customers are.
-      aws.region= 'us-west-1'
+      
+      # us-east-1 - US East (Virginia)
+      # us-west-2 - US West (Oregon)
+      # us-west-1 - US West (Northern California)
+      # eu-west-1 - EU West (Ireland)
+      # ap-southeast-1 - Asia Pacific (Singapore)
+      # ap-southeast-2 - Asia Pacific (Sydney)
+      # ap-northeast-1 - Asia Pacific (Tokyo)
+      # sa-east-1 - South America (Sao Paulo)
+      aws.region= 'us-west-2'
       #
       override.ssh.username = ssh_user 
       # Could modify code to look for environmental variable 'PRIVATE_KEY_PATH'
-      override.ssh.private_key_path = '~/.ssh/NorthernCaliforniaKeyPairName.pem'
+      #override.ssh.private_key_path = '~/.ssh/NorthernCaliforniaKeyPairName.pem'
+      override.ssh.private_key_path = '~/.ssh/oregon.pem'
       config.vm.synced_folder "../data", "/vagrant/data", type: "rsync"
 #        rsync__exclude: [ ".git/", "tools/", "private/", ".gitignore", ".gitmodules", ".vagrant/"] 
 # Got an error message when there were not any tags so add some dummy tags.
