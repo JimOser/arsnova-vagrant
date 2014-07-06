@@ -114,9 +114,7 @@ $ ./setup.sh
 
 ~~Start the machine with the following command:~~
 
-```bash
 ~~$ vagrant up dev~~
-```
 
 This will create a completely configured VM. Running this the first time will download and install all required packages. Depending on your internet connection this operation will take some time. Once the machine is up and running, you can connect with:
 
@@ -241,7 +239,8 @@ $ vagrant provision
 which will make sure all packages and scripts are present. Also, you could just destroy the machine
 
 ```bash
-i$ vagrant destroy 
+$ vagrant destroy 
+```
 
 to return to a blank slate, but be sure to check AWS Console that your AWS instance has been destroyed.)
 
