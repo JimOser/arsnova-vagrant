@@ -30,12 +30,17 @@ The goal of this forked project is to supply a AWS Ubuntu t2.micro or better env
 ```
 http://<server_ip_address>:8080
 ```
+4. Good way to learn about jmeter and other testing tools. The computer running jmeter is different than the system under test.
+5. Learn to use vim aka vi, which is available on all Linux and UNIX systems.
 
 ### Disavantages of the forked project:
 1. No GUI.
 2. Can't use IDE.
 3. Production (tomcat) is not currently supported, but should be available in a later release.
-
+4. rsync does not relibable work.
+5. No listening for arsnova-mobile changes. (Implementing the listening is a CPU performance hit that could cost money).
+6. No watching for arsnova-war changes. (Implementing the watching is a CPU performance hit that could cost money).
+7. Don't overtest the web capabilities. The more hits the AWS instance gets, the more money it is going to cost.
 ## Pre-getting started
 
 Familar yourself with the Amazon Free t2.micro tier [http://aws.amazon.com](http://aws.amazon.com)   .
@@ -172,9 +177,12 @@ drwxr-xr-x 4 ubuntu ubuntu  4096 Jun 20 01:00 arsnova-setuptool
 drwxr-xr-x 5 ubuntu ubuntu  4096 Jul  6 02:43 arsnova-war
 ```
 
-The ARSnova repositories are connected to your host machine via shared folders. This means you can use your local IDE of choice to work on the code, while the complete build process is handled by the Vagrant VM.
+~~ The ARSnova repositories are connected to your host machine via shared folders. This means you can use your local IDE of choice to work on the code, while the complete build process is handled by the Vagrant VM.  ~~
+~~ Whenever you make changes to the `arsnova-mobile` repository, a new build is triggered automatically after a few seconds, so that you can immediately see the result of your changes. ~~
 
-Whenever you make changes to the `arsnova-mobile` repository, a new build is triggered automatically after a few seconds, so that you can immediately see the result of your changes. Changes to `arsnova-war` have to be compiled manually.
+Changes to `arsnova-mobile` and `arsnova-war` have to be compiled manually.
+
+Note: The original THM implementation had shared folders. This do not work with AWS. There is a [vagrant-aws project](https://github.com/mitchellh/vagrant-aws) that is trying to get rsync to reliablely work.
 
 ## Setting up your Git
 
