@@ -42,7 +42,7 @@ Familar yourself with the Amazon Free t2.micro tier [http://aws.amazon.com](http
 
 Follow one of the many online tutorials and using the AWS Console bring up a Ubuntu t2.micro. 
 
-Even though, this is advertised as a quick 20 minute process, it may take you a day to read the documentation before you feel comfortable in plunging into signing up for AWS and configuring your first instance.
+Even though, this is advertised as a quick 20 minute process, it may take you a day to read the [AWS documentation](http://aws.amazon.com/documentation/gettingstarted/) before you feel comfortable in plunging into signing up for AWS and configuring your first instance.
 
 Please be aware that the author(s) of the forked arsnova-vagrant and the THM author(s) of the original arsnova-vagrant take no responsibility if Amazon charges you money.
 
@@ -115,7 +115,7 @@ $ ./setup.sh
 ~~Start the machine with the following command:~~
 
 ```bash
-$ vagrant up dev~~
+~~$ vagrant up dev~~
 ```
 
 This will create a completely configured VM. Running this the first time will download and install all required packages. Depending on your internet connection this operation will take some time. Once the machine is up and running, you can connect with:
@@ -232,7 +232,18 @@ Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) document.
 
 ### I'm missing some files.
 
-If files like `start.sh` are missing, it is most likely that the provisioning has failed. Run `vagrant provision` which will make sure all packages and scripts are present. Also, you could just destroy the machine (`vagrant destroy`) to return to a blank slate.
+If files like `start.sh` are missing, it is most likely that the provisioning has failed. Run
+
+```bash
+$ vagrant provision
+```
+
+which will make sure all packages and scripts are present. Also, you could just destroy the machine
+
+```bash
+i$ vagrant destroy 
+
+to return to a blank slate, but be sure to check AWS Console that your AWS instance has been destroyed.)
 
 ### Script `start.sh` never returns.
 
@@ -264,10 +275,6 @@ Do not do:
 ```
 http://localhost:8080
 ```
-
-## Is it any good?
-
-Yes.
 
 ## Credits
 
