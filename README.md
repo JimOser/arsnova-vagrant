@@ -37,7 +37,7 @@ http://<server_ip_address>:8080
 1. No GUI.
 2. Can't use IDE.
 3. Production (tomcat) is not currently supported, but should be available in a later release.
-4. rsync does not relibable work.
+4. rsync does not reliabily work.
 5. No listening for arsnova-mobile changes. (Implementing the listening is a CPU performance hit that could cost money).
 6. No watching for arsnova-war changes. (Implementing the watching is a CPU performance hit that could cost money).
 7. Don't overtest the web capabilities. The more hits the AWS instance gets, the more money it is going to cost.
@@ -177,8 +177,9 @@ drwxr-xr-x 4 ubuntu ubuntu  4096 Jun 20 01:00 arsnova-setuptool
 drwxr-xr-x 5 ubuntu ubuntu  4096 Jul  6 02:43 arsnova-war
 ```
 
-~~ The ARSnova repositories are connected to your host machine via shared folders. This means you can use your local IDE of choice to work on the code, while the complete build process is handled by the Vagrant VM.  ~~
-~~ Whenever you make changes to the `arsnova-mobile` repository, a new build is triggered automatically after a few seconds, so that you can immediately see the result of your changes. ~~
+~~The ARSnova repositories are connected to your host machine via shared folders. This means you can use your local IDE of choice to work on the code, while the complete build process is handled by the Vagrant VM.~~
+
+~~Whenever you make changes to the `arsnova-mobile` repository, a new build is triggered automatically after a few seconds, so that you can immediately see the result of your changes.~~
 
 Changes to `arsnova-mobile` and `arsnova-war` have to be compiled manually.
 
