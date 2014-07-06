@@ -13,8 +13,8 @@ class senchacmd {
         && ./$sencha_cmd_install --mode unattended --prefix /usr/local/bin",
     creates => "$sencha_path/sencha",
     require => [ Package["unzip"], File["/usr/local/bin"] ],
-    timeout => "0",
-    user => "vagrant"
+    user => $git_owner,
+    timeout => "0"
   }
 
   # Make Sencha Cmd available in PATH

@@ -1,4 +1,5 @@
 .vagrant
+.vag*
 arsnova-war
 arsnova-mobile
 arsnova-setuptool
